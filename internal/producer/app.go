@@ -4,23 +4,23 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type Producer struct {
-	Engine *gin.Engine
+type App struct {
+	router *gin.Engine
 }
 
-func New() *Producer {
-	return &Producer{
-		Engine: gin.Default(),
+func New() *App {
+	return &App{
+		router: NewRouter(),
 	}
 }
 
-func (p *Producer) Run() error {
-	if err := p.Engine.Run(":8080"); err != nil {
+func (p *App) Run() error {
+	if err := p.router.Run(":8080"); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (p *Producer) Stop() {
+func (p *App) Stop() {
 
 }

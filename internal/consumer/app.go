@@ -1,6 +1,10 @@
 package consumer
 
-type Consumer struct{}
+import "github.com/gin-gonic/gin"
+
+type Consumer struct {
+	Engine *gin.Engine
+}
 
 func New() *Consumer {
 	return &Consumer{}

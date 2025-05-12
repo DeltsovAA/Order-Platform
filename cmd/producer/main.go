@@ -6,7 +6,9 @@ import (
 )
 
 func main() {
-	if err := producer.New().Run(); err != nil {
+	p := producer.New()
+
+	if err := p.Run(); err != nil {
 		log.Println(err)
 		return
 	}
