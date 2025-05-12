@@ -1,0 +1,165 @@
+openapi: 3.0.0
+info:
+  title: Order API
+  version: 1.0.0
+  description: Простое API для управления заказами
+
+servers:
+  - url: http://localhost:8080
+
+paths:
+  /order:
+    post:
+      summary: Создать новый заказ
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Order'
+      responses:
+        '201':
+          description: Заказ успешно создан
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Заказ успешно получен
+                  order:
+                    $ref: '#/components/schemas/Order'
+        '400':
+          description: Ошибка валидации
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  info:
+                    type: string
+
+  /orders:
+    get:
+      summary: Получить список всех заказов
+      responses:
+        '200':
+          description: Список заказов
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  orders:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Order'
+
+  /orders/{id}:
+    get:
+      summary: Получить заказ по ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор заказа
+          schema:
+            type: integer
+            format: uint64
+      responses:
+        '200':
+          description: Найденный заказ
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  order:
+                    $ref: '#/components/schemas/Order'
+        '400':
+          description: Некорректный ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '404':
+          description: Заказ не найден
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+components:
+  schemas:
+    Order:
+      type: object
+      required:
+        - id
+        - customer_id
+        - status
+        - items
+        - total_amount
+        - shipping_info
+      properties:
+        id:
+          type: integer
+          format: uint64
+        customer_id:
+          type: integer
+          format: uint64
+        status:
+          type: string
+          enum: [pending, paid, shipped, delivered, canceled, returned, failed, processing, on_hold, refunded]
+        total_amount:
+          type: number
+          format: float
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+        shipping_info:
+          $ref: '#/components/schemas/ShippingInfo'
+
+    OrderItem:
+      type: object
+      required: [product_id, quantity, price]
+      properties:
+        product_id:
+          type: integer
+        quantity:
+          type: integer
+        price:
+          type: number
+          format: float
+
+    ShippingInfo:
+      type: object
+      required: [address, city, country, zip_code, contact, phone]
+      properties:
+        address:
+          type: string
+        city:
+          type: string
+        country:
+          type: string
+        zip_code:
+          type: string
+        contact:
+          type: string
+        phone:
+          type: string

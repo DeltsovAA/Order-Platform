@@ -13,6 +13,8 @@ func NewRouter() *gin.Engine {
 	router.POST("/order", handler.Post)
 	router.GET("/orders", handler.GetAll)
 	router.GET("/orders/:id", handler.GetByID)
+	router.DELETE("/order/:id", handler.Delete)
+	router.PUT("/order/:id", handler.Update)
 
 	return router
 }
