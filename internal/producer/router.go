@@ -14,7 +14,8 @@ func NewRouter() *gin.Engine {
 	router.GET("/orders", handler.GetAll)
 	router.GET("/orders/:id", handler.GetByID)
 	router.DELETE("/order/:id", handler.Delete)
-	router.PUT("/order/:id", handler.Update)
+	router.PUT("/order/:id", handler.Put)
+	router.PATCH("/order/:id", handler.Patch)
 
 	return router
 }

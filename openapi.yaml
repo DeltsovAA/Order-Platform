@@ -5,7 +5,7 @@ info:
   description: Простое API для управления заказами
 
 servers:
-  - url: http://localhost:8080
+  - url: https://app.swaggerhub.com/apis/ssss-31a/Orders/1.0.0
 
 paths:
   /order:
@@ -32,15 +32,8 @@ paths:
                     $ref: '#/components/schemas/Order'
         '400':
           description: Ошибка валидации
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                  info:
-                    type: string
+        '409':
+          description: Заказ с таким ID уже существует
 
   /orders:
     get:
@@ -57,6 +50,8 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Order'
+        '404':
+          description: Заказы не найдены
 
   /orders/{id}:
     get:
@@ -81,22 +76,82 @@ paths:
                     $ref: '#/components/schemas/Order'
         '400':
           description: Некорректный ID
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
         '404':
           description: Заказ не найден
+
+    delete:
+      summary: Удалить заказ по ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор заказа
+          schema:
+            type: integer
+            format: uint64
+      responses:
+        '200':
+          description: Заказ успешно удалён
+        '400':
+          description: Некорректный ID
+        '404':
+          description: Заказ не найден
+
+    put:
+      summary: Полностью обновить заказ
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID заказа, который нужно обновить
+          schema:
+            type: integer
+            format: uint64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Order'
+      responses:
+        '200':
+          description: Заказ успешно обновлён
+        '400':
+          description: Некорректные данные
+        '404':
+          description: Заказ не найден
+
+    patch:
+      summary: Частично обновить заказ по ID (ID нельзя менять)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: uint64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderPatch'
+      responses:
+        '200':
+          description: Заказ успешно обновлён
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  error:
+                  message:
                     type: string
+                  order:
+                    $ref: '#/components/schemas/Order'
+        '400':
+          description: Попытка изменить ID или неверный формат
+        '404':
+          description: Заказ не найден
 
 components:
   schemas:
@@ -118,7 +173,17 @@ components:
           format: uint64
         status:
           type: string
-          enum: [pending, paid, shipped, delivered, canceled, returned, failed, processing, on_hold, refunded]
+          enum:
+            - pending
+            - paid
+            - shipped
+            - delivered
+            - canceled
+            - returned
+            - failed
+            - processing
+            - on_hold
+            - refunded
         total_amount:
           type: number
           format: float
@@ -135,9 +200,42 @@ components:
         shipping_info:
           $ref: '#/components/schemas/ShippingInfo'
 
+    OrderPatch:
+      type: object
+      description: Частичное обновление заказа. Поле ID нельзя изменять.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        status:
+          type: string
+          enum:
+            - pending
+            - paid
+            - shipped
+            - delivered
+            - canceled
+            - returned
+            - failed
+            - processing
+            - on_hold
+            - refunded
+        total_amount:
+          type: number
+          format: float
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+        shipping_info:
+          $ref: '#/components/schemas/ShippingInfo'
+
     OrderItem:
       type: object
-      required: [product_id, quantity, price]
+      required:
+        - product_id
+        - quantity
+        - price
       properties:
         product_id:
           type: integer
@@ -149,7 +247,13 @@ components:
 
     ShippingInfo:
       type: object
-      required: [address, city, country, zip_code, contact, phone]
+      required:
+        - address
+        - city
+        - country
+        - zip_code
+        - contact
+        - phone
       properties:
         address:
           type: string

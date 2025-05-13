@@ -37,3 +37,11 @@ type ShippingInfo struct {
 	Contact string `json:"contact"` // имя получателя
 	Phone   string `json:"phone"`   // телефон получателя
 }
+
+var patchData struct {
+	ID           uint64       `json:"id"` // Это поле будет игнорироваться
+	Status       string       `json:"status"`
+	TotalAmount  float64      `json:"total_amount"`
+	Items        []OrderItem  `json:"items"`
+	ShippingInfo ShippingInfo `json:"shipping_info"`
+}
