@@ -92,6 +92,14 @@ paths:
       responses:
         '200':
           description: Заказ успешно удалён
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Заказ успешно удалён
         '400':
           description: Некорректный ID
         '404':
@@ -116,17 +124,27 @@ paths:
       responses:
         '200':
           description: Заказ успешно обновлён
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  order:
+                    $ref: '#/components/schemas/Order'
         '400':
           description: Некорректные данные
         '404':
           description: Заказ не найден
 
     patch:
-      summary: Частично обновить заказ по ID (ID нельзя менять)
+      summary: Частично обновить заказ (ID нельзя менять)
       parameters:
         - name: id
           in: path
           required: true
+          description: ID заказа
           schema:
             type: integer
             format: uint64
@@ -149,7 +167,7 @@ paths:
                   order:
                     $ref: '#/components/schemas/Order'
         '400':
-          description: Попытка изменить ID или неверный формат
+          description: Неверный формат или попытка изменить ID
         '404':
           description: Заказ не найден
 
